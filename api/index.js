@@ -16,6 +16,7 @@ const db = admin.firestore();
 const token =
   process.env.TOKEN || "8150266495:AAFZmlYyPYInSPB9k4AHREV2NxE6uIjaIT0";
 const bot = new TelegramBot(token, { polling: true });
+bot.enableCancellation(); // Enable promise cancellation
 console.log("Telegram Bot is running");
 
 // Handle the /start command
@@ -66,6 +67,11 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json());
 
+const timeout = (ms) =>
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Request Timeout")), ms)
+  );
+
 app.get("/api/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   console.log(`Fetching user data for ID: ${userId}`);
@@ -77,7 +83,11 @@ app.get("/api/user/:userId", async (req, res) => {
     // Start the timer
     console.time("Get User Document");
 
-    const userDoc = await userRef.get();
+    // Use Promise.race to implement a timeout
+    const userDoc = await Promise.race([
+      userRef.get(),
+      timeout(9000), // 9 seconds timeout
+    ]);
 
     // End the timer
     console.timeEnd("Get User Document");
