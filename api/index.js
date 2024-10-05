@@ -54,16 +54,15 @@ bot.onText(/\/start/, (msg) => {
 
 // Create an Express app
 const app = express();
-const frontendUrl =
-  "https://d704-2405-201-e060-50-28fe-7712-cf8a-5baf.ngrok-free.app";
-
 app.use(
   cors({
-    origin: frontendUrl, // Allow only your frontend URL
-    methods: ["GET", "POST"], // Allow specific HTTP methods
-    credentials: true, // Allow credentials (like cookies or Authorization headers)
+    origin: "*", // Allow all origins for testing purposes (update this for production)
+    methods: ["GET", "POST"],
+    credentials: true,
   })
 );
+("https://d704-2405-201-e060-50-28fe-7712-cf8a-5baf.ngrok-free.app");
+
 // Middleware to parse JSON requests
 app.use(express.json());
 
