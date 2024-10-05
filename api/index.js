@@ -4,12 +4,10 @@ require("dotenv").config();
 const cors = require("cors");
 
 const admin = require("firebase-admin");
-const serviceAccount = require("../firebase/serviceAccountKey.json"); // Update with your path
 
-// Initialize Firebase Admin SDK
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://aelon-7d5aa.firebaseio.com", // Replace with your project ID
+  credential: admin.credential.applicationDefault(), // or use `admin.credential.cert(serviceAccount)` if using a service account
+  databaseURL: "https://aelon-7d5aa.firebaseio.com",
 });
 
 const db = admin.firestore();
