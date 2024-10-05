@@ -67,14 +67,10 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json());
 
-<<<<<<< HEAD
 const timeout = (ms) =>
   new Promise((_, reject) =>
     setTimeout(() => reject(new Error("Request Timeout")), ms)
   );
-=======
-const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Request Timeout")), ms));
->>>>>>> 891c27e859a9cdfef3ab7406a46c4472b34bc7d9
 
 app.get("/api/user/:userId", async (req, res) => {
   const userId = req.params.userId;
@@ -86,21 +82,13 @@ app.get("/api/user/:userId", async (req, res) => {
 
     // Start the timer
     console.time("Get User Document");
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 891c27e859a9cdfef3ab7406a46c4472b34bc7d9
     // Use Promise.race to implement a timeout
     const userDoc = await Promise.race([
       userRef.get(),
       timeout(9000), // 9 seconds timeout
     ]);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 891c27e859a9cdfef3ab7406a46c4472b34bc7d9
     // End the timer
     console.timeEnd("Get User Document");
 
@@ -118,11 +106,11 @@ app.get("/api/user/:userId", async (req, res) => {
     res.json(userData);
   } catch (error) {
     console.error("Error fetching user data:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
-
-
 
 // Start the server
 const PORT = process.env.PORT; // Default to 3001 if PORT is not specified
