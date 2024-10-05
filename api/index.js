@@ -1,0 +1,84 @@
+const TelegramBot = require("node-telegram-bot-api");
+const express = require("express");
+require("dotenv").config();
+const cors = require("cors");
+
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccountKey.json"); // Update with your path
+
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://aelon-7d5aa.firebaseio.com", // Replace with your project ID
+});
+
+const db = admin.firestore();
+
+// Initialize the Telegram bot with your Telegram API token
+const token =
+  process.env.TOKEN || "8150266495:AAFZmlYyPYInSPB9k4AHREV2NxE6uIjaIT0";
+const bot = new TelegramBot(token, { polling: true });
+console.log("Telegram Bot is running");
+
+// Handle the /start command
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+
+  // Send a button to open the mini-app
+  const inlineKeyboard = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "Open User Stats",
+            web_app: {
+              url: "https://d704-2405-201-e060-50-28fe-7712-cf8a-5baf.ngrok-free.app",
+            },
+          },
+        ],
+      ],
+    },
+  };
+
+  bot.sendMessage(
+    chatId,
+    "Welcome! Click the button below to check your stats.",
+    inlineKeyboard
+  );
+});
+
+// Create an Express app
+const app = express();
+app.use(cors());
+// Middleware to parse JSON requests
+app.use(express.json());
+
+app.get("/api/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  console.log(`Fetching user data for ID: ${userId}`);
+
+  try {
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+    console.log(`User document exists: ${userDoc.exists}`);
+
+    if (!userDoc.exists) {
+      // Create a new user document if it doesn't exist
+      await userRef.set({ xp: 0, gold: 0, level: 1 }); // Default values
+      console.log(`User document created for ID: ${userId}`);
+      return res.json({ message: "User created", xp: 0, gold: 0, level: 1 });
+    }
+
+    const userData = userDoc.data();
+    res.json(userData);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT; // Default to 3001 if PORT is not specified
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
