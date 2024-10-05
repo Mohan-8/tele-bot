@@ -56,7 +56,7 @@ bot.onText(/\/start/, (msg) => {
 const app = express();
 
 const corsOptions = {
-  origin: "https://d704-2405-201-e060-50-28fe-7712-cf8a-5baf.ngrok-free.app", // Your front-end URL
+  origin: "*",
   methods: ["GET", "POST"],
   credentials: true,
 };
