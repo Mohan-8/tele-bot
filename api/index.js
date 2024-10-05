@@ -56,7 +56,11 @@ bot.onText(/\/start/, (msg) => {
 
 // Create an Express app
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // Adjust this to your frontend URL for security
+  })
+);
 // Middleware to parse JSON requests
 app.use(express.json());
 
