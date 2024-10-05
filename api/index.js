@@ -54,9 +54,14 @@ bot.onText(/\/start/, (msg) => {
 
 // Create an Express app
 const app = express();
+const frontendUrl =
+  "https://d704-2405-201-e060-50-28fe-7712-cf8a-5baf.ngrok-free.app";
+
 app.use(
   cors({
-    origin: "*", // Adjust this to your frontend URL for security
+    origin: frontendUrl, // Allow only your frontend URL
+    methods: ["GET", "POST"], // Allow specific HTTP methods
+    credentials: true, // Allow credentials (like cookies or Authorization headers)
   })
 );
 // Middleware to parse JSON requests
@@ -72,8 +77,7 @@ app.get("/api/user/:userId", async (req, res) => {
     console.log(`User document exists: ${userDoc.exists}`);
 
     if (!userDoc.exists) {
-      // Create a new user document if it doesn't exist
-      await userRef.set({ xp: 0, gold: 0, level: 1 }); // Default values
+      await userRef.set({ xp: 0, gold: 0, level: 1 });
       console.log(`User document created for ID: ${userId}`);
       return res.json({ message: "User created", xp: 0, gold: 0, level: 1 });
     }
@@ -82,7 +86,9 @@ app.get("/api/user/:userId", async (req, res) => {
     res.json(userData);
   } catch (error) {
     console.error("Error fetching user data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
