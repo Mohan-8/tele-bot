@@ -72,16 +72,19 @@ app.get("/api/user/:userId", async (req, res) => {
 
   try {
     const userRef = db.collection("users").doc(userId);
+    console.log(`Attempting to get user document...`);
     const userDoc = await userRef.get();
-    console.log(`User document exists: ${userDoc.exists}`);
+    console.log(`User document retrieved: ${userDoc.exists}`);
 
     if (!userDoc.exists) {
+      console.log(`User document does not exist, creating new user...`);
       await userRef.set({ xp: 0, gold: 0, level: 1 });
       console.log(`User document created for ID: ${userId}`);
       return res.json({ message: "User created", xp: 0, gold: 0, level: 1 });
     }
 
     const userData = userDoc.data();
+    console.log(`User data fetched: ${JSON.stringify(userData)}`);
     res.json(userData);
   } catch (error) {
     console.error("Error fetching user data:", error);
