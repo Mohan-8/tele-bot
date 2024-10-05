@@ -5,10 +5,15 @@ const cors = require("cors");
 
 const admin = require("firebase-admin");
 
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(), // or use `admin.credential.cert(serviceAccount)` if using a service account
-  databaseURL: "https://aelon-7d5aa.firebaseio.com",
-});
+// Initialize Firebase only if it hasn't been initialized yet
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(), // or use admin.credential.cert(serviceAccount) if using a service account
+    databaseURL: "https://aelon-7d5aa.firebaseio.com",
+  });
+} else {
+  console.log("Firebase app already initialized.");
+}
 
 const db = admin.firestore();
 
