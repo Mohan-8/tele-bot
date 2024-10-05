@@ -73,7 +73,15 @@ app.get("/api/user/:userId", async (req, res) => {
   try {
     const userRef = db.collection("users").doc(userId);
     console.log(`Attempting to get user document...`);
+
+    // Start the timer
+    console.time("Get User Document");
+
     const userDoc = await userRef.get();
+
+    // End the timer
+    console.timeEnd("Get User Document");
+
     console.log(`User document retrieved: ${userDoc.exists}`);
 
     if (!userDoc.exists) {
