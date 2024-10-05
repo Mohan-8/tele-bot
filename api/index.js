@@ -66,6 +66,8 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json());
 
+const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Request Timeout")), ms));
+
 app.get("/api/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   console.log(`Fetching user data for ID: ${userId}`);
@@ -76,9 +78,13 @@ app.get("/api/user/:userId", async (req, res) => {
 
     // Start the timer
     console.time("Get User Document");
-
-    const userDoc = await userRef.get();
-
+    
+    // Use Promise.race to implement a timeout
+    const userDoc = await Promise.race([
+      userRef.get(),
+      timeout(9000), // 9 seconds timeout
+    ]);
+    
     // End the timer
     console.timeEnd("Get User Document");
 
@@ -96,11 +102,10 @@ app.get("/api/user/:userId", async (req, res) => {
     res.json(userData);
   } catch (error) {
     console.error("Error fetching user data:", error);
-    res
-      .status(500)
-      .json({ error: "Internal Server Error", details: error.message });
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 });
+
 
 
 // Start the server
