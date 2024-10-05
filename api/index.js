@@ -102,6 +102,7 @@ app.get("/api/user/:userId", async (req, res) => {
   }
 });
 
+
 // Start the server
 const PORT = process.env.PORT; // Default to 3001 if PORT is not specified
 app.listen(PORT, () => {
