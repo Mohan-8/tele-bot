@@ -4,7 +4,7 @@ require("dotenv").config();
 const cors = require("cors");
 
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json"); // Update with your path
+const serviceAccount = require("../firebase/serviceAccountKey.json"); // Update with your path
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -22,9 +22,9 @@ console.log("Telegram Bot is running");
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
+  console.log(`Received /start command from user: ${msg.chat.id}`);
   const chatId = msg.chat.id;
 
-  // Send a button to open the mini-app
   const inlineKeyboard = {
     reply_markup: {
       inline_keyboard: [
@@ -40,11 +40,18 @@ bot.onText(/\/start/, (msg) => {
     },
   };
 
-  bot.sendMessage(
-    chatId,
-    "Welcome! Click the button below to check your stats.",
-    inlineKeyboard
-  );
+  bot
+    .sendMessage(
+      chatId,
+      "Welcome! Click the button below to check your stats.",
+      inlineKeyboard
+    )
+    .then(() => {
+      console.log(`Message sent to chat ID: ${chatId}`);
+    })
+    .catch((error) => {
+      console.error("Error sending message:", error);
+    });
 });
 
 // Create an Express app
